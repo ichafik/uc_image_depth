@@ -2,6 +2,9 @@
 # Docker Flask Image with Image Reshaping and SQLAlchemy Integration
 
 This repository contains a Dockerized Flask application named "uc_image_depth" with functionality for image reshaping and integration with SQLAlchemy. The application serves images based on specified depth ranges.
+# Architecture
+
+![architecture](./image_doc/architecture.png)
 
 ## Components
 
@@ -36,6 +39,27 @@ This Python script implements the Flask application with the following functiona
 - **Image Processing**: Processes the filtered DataFrame to generate the final image to be served.
 - **Rendering HTML**: Embeds the processed image in HTML and renders it using the `index.html` template.
 
+### query/sql.py
+
+
+This Python script performs the following tasks using SQLAlchemy:
+
+- Imports necessary modules from SQLAlchemy, namely sessionmaker, create_engine, declarative_base, and text.
+- Creates an SQLite database engine pointing to a file named data.db.
+- Defines a base class Base using declarative_base().
+- Checks if a session object exists and closes it if it does.
+- Drops the table named image_data if it exists in the database.
+- Recreates all tables defined in the SQLAlchemy base (Base.metadata.create_all(engine)).
+- Creates a new session using sessionmaker bound to the defined engine.
+
+### utils.py
+
+- The script defines an SQLAlchemy ORM class for storing image data in a SQLite database.
+- It contains a function to process and save images along with depth information into the database.
+- The function resizes images to a width of 150 pixels while maintaining aspect ratio.
+- It converts resized images to base64 encoding before storing them in the database.
+- The script utilizes various libraries like base64, numpy, PIL, and SQLAlchemy for image processing and database interaction.
+
 ## Usage
 
 ### Local approach
@@ -55,6 +79,8 @@ Flask Image Viewer also provides an API for programmatic access to image data. T
 
 - `/images?depth_min=<depth_min>&depth_max=<depth_max>`: GET method to retrieve images based on specified depth ranges. Replace `<depth_min>` and `<depth_max>` with the desired minimum and maximum depth values.
 
+- Use the text box in the UI to input the `min_depth` and `max_depth`
+
 **How it works:**
 
 1. Send a GET request to the `/images` endpoint with the desired depth range specified as query parameters.
@@ -72,6 +98,9 @@ This API allows you to programmatically retrieve images by specifying depth rang
 
 ### Azure Web App
 
-You can access the Flask application at `https://uc-image-depth-selector.azurewebsites.net/images?depth_min=9099&depth_max=9400` in your web browser. (Please note: The website might be down; feel free to reach out to [me](mailto:imrane.chafik@gmail.com) to provide you with the updated URL.)
+You can access the Flask application at `https://uc-image-depth-selector.azurewebsites.net/images?depth_min=9099&depth_max=9400` in your web browser. (Please note: The webapp might be down; feel free to reach out to [me](mailto:imrane.chafik@gmail.com) to provide you with the updated URL.)
 
+
+### TBD to be done:
 These points need further development to complete the functionality of the application.
+1. The ui text value need to keep the last value the user inputed

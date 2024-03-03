@@ -21,7 +21,7 @@ class ImageData(Base):
     __tablename__ = 'image_data'
     id = Column(Integer, primary_key=True)
     image_data = Column(String)
-    depth = Column(Float)  # Add depth column
+    depth = Column(Float)  
 
 # Create tables
 Base.metadata.create_all(engine)
@@ -50,19 +50,10 @@ def get_images():
     image_arrays = []
 
     for image_data in images_data:
-        # Decode base64-encoded image data
         image_bytes = base64.b64decode(image_data.image_data)
-        
-        # Convert image bytes to PIL image
         pil_image = Image.open(BytesIO(image_bytes))
-
-        # Convert PIL image to numpy array
         image_array = np.array(pil_image)
-
-        # Append image array to list
         image_arrays.append(image_array)
-
-    # Concatenate image arrays
     final_image = np.concatenate(image_arrays, axis=0)
 
     # Convert concatenated image to base64
