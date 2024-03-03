@@ -32,6 +32,8 @@ This Python script implements the Flask application with the following functiona
 - **Rendering HTML**: Embeds the processed image in HTML and renders it using the `index.html` template.
 
 ## Usage
+
+### Local approach
 To build and run the Docker image, navigate to the directory containing the Dockerfile and run the following commands:
 
 ```bash
@@ -39,9 +41,15 @@ docker build -t image_depth .
 docker run -p 50000:50000 image_depth
 ```
 
-Once the container is running, you can access the Flask application at `http://localhost:50000/images` in your web browser.
+Once the container is running, you can access the Flask application at `http://localhost:50000/images?depth_min=9099&depth_max=9400` in your web browser.
 
-## TBD (To Be Determined)
+
+### Azure Web App :
+
+You can access the Flask application at `https://uc-image-depth-selector.azurewebsites.net/images?depth_min=9099&depth_max=9400` in your web browser.
+website might be down, feel free to reach out to [me](mailto:imrane.chafik@gmail.com) to provide you with the updated url 
+
+## TBD (To Be Done)
 - **Reshape DataFrame**: Implement the logic to reshape the DataFrame (`df`) to fit the desired image dimensions.
 - **Store Data in SQLite3**: Implement the logic to store the reshaped data in a SQLite3 database.
 
