@@ -2,6 +2,7 @@
 # Docker Flask Image with Image Reshaping and SQLAlchemy Integration
 
 This repository contains a Dockerized Flask application named "uc_image_depth" with functionality for image reshaping and integration with SQLAlchemy. The application serves images based on specified depth ranges.
+
 # Architecture
 
 ![architecture](./architecture.png)
