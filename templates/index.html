@@ -4,9 +4,106 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Image Viewer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 32px;
+        }
+
+        .form-container {
+            text-align: center;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .form-container label {
+            display: block;
+            margin-bottom: 10px;
+            color: #333;
+            font-size: 18px;
+        }
+
+        .form-container input[type="number"] {
+            width: 150px;
+            padding: 10px;
+            margin: 0 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .form-container button[type="submit"] {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-size: 18px;
+        }
+
+        .form-container button[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        .image-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .image-container img {
+            max-width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+    </style>
 </head>
 <body>
-    <h1>Result</h1>
-    {{ image_html | safe }}
+    <div class="container">
+        <h1>Image Viewer</h1>
+        <form id="depth-form" class="form-container">
+            <label for="min-depth">Min Depth:</label>
+            <input type="number" id="min-depth" name="min-depth" step="0.01" required value="9100">
+            <label for="max-depth">Max Depth:</label>
+            <input type="number" id="max-depth" name="max-depth" step="0.01" required value="9105">
+            <button type="submit"> Call Image API </button>
+        </form>
+        <div class="image-container">
+            {{ image_html | safe }}
+        </div>
+    </div>
+    <script>
+        // JavaScript code to handle form submission
+        document.getElementById("depth-form").addEventListener("submit", function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            // Get min and max depth values from the form
+            var minDepth = document.getElementById("min-depth").value;
+            var maxDepth = document.getElementById("max-depth").value;
+
+            // Redirect to the Flask route with new depth range
+            window.location.href = "/images?depth_min=" + minDepth + "&depth_max=" + maxDepth;
+        });
+    </script>
 </body>
 </html>

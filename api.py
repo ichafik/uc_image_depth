@@ -1,55 +1,86 @@
 import pandas as pd
-from PIL import Image
-from io import BytesIO
 import base64
-from flask import Flask, request, render_template
+from io import BytesIO
 import numpy as np
+from PIL import Image
 
-app = Flask(__name__)
+from flask import Flask, request, render_template
+from sqlalchemy import create_engine, Column, Float, Integer, String
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+from utils import process_and_save_image
 
 app = Flask(__name__, template_folder='./templates')
 
-# Load data
-df = pd.read_csv("./data/data.csv")
+# Define SQLAlchemy engine and base
+engine = create_engine('sqlite:///data.db', echo=True)
+Base = declarative_base()
 
-###
-## TBD: Reshape dataframe
-## TBD: Store data in Sqlite3
+# Define ORM class for image data
+class ImageData(Base):
+    __tablename__ = 'image_data'
+    id = Column(Integer, primary_key=True)
+    image_data = Column(String)
+    depth = Column(Float)  # Add depth column
+
+# Create tables
+Base.metadata.create_all(engine)
+
+# Create a session
+Session = sessionmaker(bind=engine)
+session = Session()
 
 @app.route("/images", methods=["GET"])
 def get_images():
-    ## TBD: Read data from Sqlite3
+    """
+    Retrieve images from the database based on depth range parameters
+    and construct HTML to display the concatenated image.
+
+    Returns:
+        str: HTML code containing the concatenated image.
+    """
+    # Retrieve depth range parameters from request
     depth_min = float(request.args.get("depth_min"))
     depth_max = float(request.args.get("depth_max"))
-    filtered_df = df[(df["depth"] >= depth_min) & (df["depth"] <= depth_max)]
+
+    # Retrieve base64-encoded image data from the database based on depth range
+    images_data = session.query(ImageData).filter(ImageData.depth >= depth_min, ImageData.depth <= depth_max).all()
 
     # Initialize variables to store image dimensions
-    num_rows = len(filtered_df)
-    image_shape = (10, 20)
-
     image_arrays = []
-    # Loop through each row in the filtered DataFrame, optimization potential to avoid loop 
-    for idx, row in filtered_df.iterrows():
-        pixel_values = row.iloc[1:].values.astype(np.uint8)
 
-        if pixel_values.size != np.prod(image_shape):
-            raise ValueError("Pixel values size does not match the image shape.")
+    for image_data in images_data:
+        # Decode base64-encoded image data
+        image_bytes = base64.b64decode(image_data.image_data)
+        
+        # Convert image bytes to PIL image
+        pil_image = Image.open(BytesIO(image_bytes))
 
-        image_array = pixel_values.reshape(image_shape)
+        # Convert PIL image to numpy array
+        image_array = np.array(pil_image)
+
+        # Append image array to list
         image_arrays.append(image_array)
 
+    # Concatenate image arrays
     final_image = np.concatenate(image_arrays, axis=0)
-    final_image_pil = Image.fromarray(final_image)
 
+    # Convert concatenated image to base64
     with BytesIO() as buffer:
+        final_image_pil = Image.fromarray(final_image)
         final_image_pil.save(buffer, format="PNG")
         buffer.seek(0)
-        image_bytes = buffer.getvalue()
-        base64_image = base64.b64encode(image_bytes).decode("utf-8")
+        base64_image = base64.b64encode(buffer.getvalue()).decode("utf-8")
 
+    # Construct HTML image tag
     image_html = f'<img src="data:image/png;base64,{base64_image}" alt="Concatenated Image">'
 
     return render_template("index.html", image_html=image_html)
 
 if __name__ == "__main__":
+    # Load data
+    df = pd.read_csv("./data/data.csv")
+    # Process and save image to database
+    process_and_save_image(session, df)
+    # Run the Flask app
     app.run(host='0.0.0.0', port=50000, debug=True)

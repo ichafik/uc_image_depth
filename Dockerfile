@@ -12,9 +12,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy all necessary files into the container
 COPY api.py .
-COPY call.py .
+COPY utils.py .
 COPY data ./data
 COPY templates ./templates
+COPY query ./query
 
 # Command to run the Flask server
 CMD ["python", "api.py"]
