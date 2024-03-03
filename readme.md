@@ -5,7 +5,7 @@ This repository contains a Dockerized Flask application named "uc_image_depth" w
 
 # Architecture
 
-![architecture](./image_doc/architecture.png)
+![architecture](image_doc/architecture.png)
 
 ## Components
 
