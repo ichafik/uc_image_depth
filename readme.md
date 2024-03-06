@@ -1,4 +1,4 @@
-```markdown
+
 # Docker Flask Image with Image Reshaping and SQLAlchemy Integration
 
 This repository contains a Dockerized Flask application named "uc_image_depth" with functionality for image reshaping and integration with SQLAlchemy. The application serves images based on specified depth ranges.
@@ -68,8 +68,8 @@ This Python script performs the following tasks using SQLAlchemy:
 To build and run the Docker image, navigate to the directory containing the Dockerfile and run the following commands:
 
 ```bash
-docker build -t image_depth .
-docker run -p 50000:50000 image_depth
+docker build -t uc_image_depth .
+docker run -p 50000:50000 uc_image_depth
 ```
 
 Once the container is running, you can access the Flask application at `http://localhost:50000/images?depth_min=9099&depth_max=9105` in your web browser.
